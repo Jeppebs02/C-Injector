@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#pragma comment(lib, "ntdll.lib")
+
 static NtOpenProcess_t NtOpenProcess = NULL;
 static NtCreateSection_t NtCreateSection = NULL;
 static NtMapViewOfSection_t NtMapViewOfSection = NULL;
@@ -103,17 +105,16 @@ static PVOID GetRemoteLoadLibraryW(HANDLE hProcess)
     return (PVOID)((ULONG_PTR)remoteK32 + offset);
 }
 
-/* ------------------------------------------------------------------ */
-/*  The public injector routine                                       */
+
 BOOL InjectDll(DWORD pid, LPCWSTR dllPath)
 {
     if (!InitNtdll()) return FALSE;
 
-    /* ---------------------------------------------------------------- */
-    /* 1.  Open the target process (all access) */
+    // Open target
     HANDLE hTarget = NULL;
-    OBJECT_ATTRIBUTES objAttr = { 0 };
+    OBJECT_ATTRIBUTES objAttr;
     InitializeObjectAttributes(&objAttr, NULL, 0, NULL, NULL);
+
     CLIENT_ID cid = { .UniqueProcess = (HANDLE)(ULONG_PTR)pid, .UniqueThread = NULL };
 
     NTSTATUS status = NtOpenProcess(&hTarget, PROCESS_ALL_ACCESS,

@@ -314,7 +314,18 @@ typedef NTSTATUS(NTAPI* NtCreateThreadEx_t)(
     SIZE_T                 MaximumStackSize,
     PVOID                  AttributeList);
 
+#define InitializeObjectAttributes(p, n, a, r, s) \
+    do { \
+        (p)->Length = sizeof(OBJECT_ATTRIBUTES); \
+        (p)->RootDirectory = r; \
+        (p)->Attributes = a; \
+        (p)->ObjectName = n; \
+        (p)->SecurityDescriptor = s; \
+        (p)->SecurityQualityOfService = NULL; \
+    } while (0)
 
+
+// These are not in your code, but are needed for the GetRemoteModuleBase function
 typedef NTSTATUS(NTAPI* NtQueryInformationProcess_t)(
     HANDLE           ProcessHandle,
     PROCESSINFOCLASS ProcessInformationClass,

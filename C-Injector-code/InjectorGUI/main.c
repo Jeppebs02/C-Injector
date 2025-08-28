@@ -1,4 +1,5 @@
 #include "injector.h"
+#include <stdio.h>
 
 
 int main(void)
@@ -7,8 +8,8 @@ int main(void)
     LPCWSTR dll = L"C:\\Users\\lain\\Documents\\Oracle-Server\\Dll2.dll";
 
     if (InjectDll(pid, dll))
-        wprintf(L"[*] Injection succeeded.\n");
+        printf(L"[*] Injection succeeded.\n");
     else
-        wprintf(L"[!] Injection failed.\n");
+        printf(L"[!] Injection failed.\n");
     return 0;
 }
