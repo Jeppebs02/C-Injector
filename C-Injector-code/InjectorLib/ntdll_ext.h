@@ -1,7 +1,7 @@
 ﻿#pragma once
 // ntdll_ext.h
 #include <windows.h>
-
+#include <tlhelp32.h>
 
 typedef _Return_type_success_(return >= 0) long NTSTATUS;
 
