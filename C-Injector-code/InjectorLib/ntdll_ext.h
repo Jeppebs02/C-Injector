@@ -232,29 +232,6 @@ typedef struct _OBJECT_ATTRIBUTES
 
 
 
-typedef NTSTATUS(NTAPI* NtCreateSection_t)(
-    PHANDLE            SectionHandle,
-    ACCESS_MASK        DesiredAccess,
-    POBJECT_ATTRIBUTES ObjectAttributes,
-    PLARGE_INTEGER     MaximumSize,
-    ULONG              SectionPageProtection,
-    ULONG              AllocationAttributes,
-    HANDLE             FileHandle);
-
-typedef NTSTATUS(NTAPI* NtMapViewOfSection_t)(
-    HANDLE                  SectionHandle,
-    HANDLE                  ProcessHandle,
-    PVOID* BaseAddress,
-    ULONG_PTR                ZeroBits,
-    SIZE_T                   CommitSize,
-    PLARGE_INTEGER           SectionOffset,
-    PSIZE_T                  ViewSize,
-    DWORD                    InheritDisposition,
-    ULONG                    AllocationType,
-    ULONG                    Win32Protect);
-
-
-
 typedef NTSTATUS(NTAPI* NtOpenProcess_t)(PHANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES, PCLIENT_ID);
 typedef NTSTATUS(NTAPI* NtCreateThreadEx_t)(PHANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES, HANDLE, PVOID, PVOID, ULONG, SIZE_T, SIZE_T, SIZE_T, PVOID);
 typedef NTSTATUS(NTAPI* NtQueryInformationProcess_t)(HANDLE, PROCESSINFOCLASS, PVOID, ULONG, PULONG);
@@ -271,26 +248,7 @@ typedef struct _LDR_DATA_TABLE_ENTRY { // Full struct needed for correct member 
 } LDR_DATA_TABLE_ENTRY, * PLDR_DATA_TABLE_ENTRY;
 
 
-typedef NTSTATUS(NTAPI* NtCreateSection_t)(
-    PHANDLE            SectionHandle,
-    ACCESS_MASK        DesiredAccess,
-    POBJECT_ATTRIBUTES ObjectAttributes,
-    PLARGE_INTEGER     MaximumSize,
-    ULONG              SectionPageProtection,
-    ULONG              AllocationAttributes,
-    HANDLE             FileHandle);
 
-typedef NTSTATUS(NTAPI* NtMapViewOfSection_t)(
-    HANDLE                  SectionHandle,
-    HANDLE                  ProcessHandle,
-    PVOID* BaseAddress,
-    ULONG_PTR                ZeroBits,
-    SIZE_T                   CommitSize,
-    PLARGE_INTEGER           SectionOffset,
-    PSIZE_T                  ViewSize,
-    DWORD                    InheritDisposition,
-    ULONG                    AllocationType,
-    ULONG                    Win32Protect);
 
 #define InitializeObjectAttributes(p, n, a, r, s) \
     do { \
