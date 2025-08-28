@@ -231,11 +231,6 @@ typedef struct _OBJECT_ATTRIBUTES
 
 
 
-typedef NTSTATUS(NTAPI* NtOpenProcess_t)(
-    PHANDLE            ProcessHandle,
-    ACCESS_MASK        DesiredAccess,
-    POBJECT_ATTRIBUTES ObjectAttributes,
-    PCLIENT_ID        ClientId);
 
 typedef NTSTATUS(NTAPI* NtCreateSection_t)(
     PHANDLE            SectionHandle,
@@ -258,27 +253,23 @@ typedef NTSTATUS(NTAPI* NtMapViewOfSection_t)(
     ULONG                    AllocationType,
     ULONG                    Win32Protect);
 
-typedef NTSTATUS(NTAPI* NtCreateThreadEx_t)(
-    PHANDLE                ThreadHandle,
-    ACCESS_MASK            DesiredAccess,
-    POBJECT_ATTRIBUTES     ObjectAttributes,
-    HANDLE                 ProcessHandle,
-    PVOID                  StartRoutine,
-    PVOID                  Argument,
-    ULONG                  CreateFlags,
-    SIZE_T                 ZeroBits,
-    SIZE_T                 StackSize,
-    SIZE_T                 MaximumStackSize,
-    PVOID                  AttributeList);
 
 
+typedef NTSTATUS(NTAPI* NtOpenProcess_t)(PHANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES, PCLIENT_ID);
+typedef NTSTATUS(NTAPI* NtCreateThreadEx_t)(PHANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES, HANDLE, PVOID, PVOID, ULONG, SIZE_T, SIZE_T, SIZE_T, PVOID);
+typedef NTSTATUS(NTAPI* NtQueryInformationProcess_t)(HANDLE, PROCESSINFOCLASS, PVOID, ULONG, PULONG);
+typedef NTSTATUS(NTAPI* NtReadVirtualMemory_t)(HANDLE, PVOID, PVOID, SIZE_T, PSIZE_T);
+typedef NTSTATUS(NTAPI* NtAllocateVirtualMemory_t)(HANDLE, PVOID*, ULONG_PTR, PSIZE_T, ULONG, ULONG);
+typedef NTSTATUS(NTAPI* NtWriteVirtualMemory_t)(HANDLE, PVOID, PVOID, SIZE_T, PSIZE_T);
+typedef NTSTATUS(NTAPI* NtFreeVirtualMemory_t)(HANDLE, PVOID*, PSIZE_T, ULONG);
 
 
-typedef NTSTATUS(NTAPI* NtOpenProcess_t)(
-    PHANDLE            ProcessHandle,
-    ACCESS_MASK        DesiredAccess,
-    POBJECT_ATTRIBUTES ObjectAttributes,
-    PCLIENT_ID         ClientId);
+typedef struct _LDR_DATA_TABLE_ENTRY { // Full struct needed for correct member offsets
+    LIST_ENTRY InMemoryOrderLinks;
+    PVOID Reserved1[2]; PVOID DllBase; PVOID EntryPoint; PVOID Reserved2;
+    UNICODE_STRING FullDllName; UNICODE_STRING BaseDllName;
+} LDR_DATA_TABLE_ENTRY, * PLDR_DATA_TABLE_ENTRY;
+
 
 typedef NTSTATUS(NTAPI* NtCreateSection_t)(
     PHANDLE            SectionHandle,
@@ -300,19 +291,6 @@ typedef NTSTATUS(NTAPI* NtMapViewOfSection_t)(
     DWORD                    InheritDisposition,
     ULONG                    AllocationType,
     ULONG                    Win32Protect);
-
-typedef NTSTATUS(NTAPI* NtCreateThreadEx_t)(
-    PHANDLE                ThreadHandle,
-    ACCESS_MASK            DesiredAccess,
-    POBJECT_ATTRIBUTES     ObjectAttributes,
-    HANDLE                 ProcessHandle,
-    PVOID                  StartRoutine,
-    PVOID                  Argument,
-    ULONG                  CreateFlags,
-    SIZE_T                 ZeroBits,
-    SIZE_T                 StackSize,
-    SIZE_T                 MaximumStackSize,
-    PVOID                  AttributeList);
 
 #define InitializeObjectAttributes(p, n, a, r, s) \
     do { \
@@ -325,23 +303,4 @@ typedef NTSTATUS(NTAPI* NtCreateThreadEx_t)(
     } while (0)
 
 
-// These are not in your code, but are needed for the GetRemoteModuleBase function
-typedef NTSTATUS(NTAPI* NtQueryInformationProcess_t)(
-    HANDLE           ProcessHandle,
-    PROCESSINFOCLASS ProcessInformationClass,
-    PVOID            ProcessInformation,
-    ULONG            ProcessInformationLength,
-    PULONG           ReturnLength);
 
-typedef NTSTATUS(NTAPI* NtReadVirtualMemory_t)(
-    HANDLE   ProcessHandle,
-    PVOID    BaseAddress,
-    PVOID    Buffer,
-    SIZE_T   BufferSize,
-    PSIZE_T  NumberOfBytesRead);
-
-typedef NTSTATUS(NTAPI* NtFreeVirtualMemory_t)(
-    HANDLE  ProcessHandle,
-    PVOID* BaseAddress,
-    PSIZE_T RegionSize,
-    ULONG   FreeType);
