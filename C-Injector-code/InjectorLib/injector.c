@@ -18,7 +18,9 @@ static NtFreeVirtualMemory_t         fnNtFreeVirtualMemory = NULL;
 static BOOL InitNtdll(void)
 {
     HMODULE hNtDll = GetModuleHandleW(L"ntdll.dll");
-    if (!hNtDll) return FALSE;
+    if (!hNtDll) {
+        return FALSE;
+    }
 
     fnNtOpenProcess = (NtOpenProcess_t)GetProcAddress(hNtDll, "NtOpenProcess");
     fnNtCreateThreadEx = (NtCreateThreadEx_t)GetProcAddress(hNtDll, "NtCreateThreadEx");
@@ -110,8 +112,10 @@ BOOL InjectDll(DWORD pid, LPCWSTR dllPath)
     InitializeObjectAttributes(&objAttr, NULL, 0, NULL, NULL);
     CLIENT_ID cid = { .UniqueProcess = (HANDLE)(ULONG_PTR)pid, .UniqueThread = NULL };
 
-    // 
-    if (fnNtOpenProcess(&hTarget, PROCESS_ALL_ACCESS, &objAttr, &cid) != STATUS_SUCCESS) return FALSE;
+	// get a handle to the target process with all access
+    if (fnNtOpenProcess(&hTarget, PROCESS_ALL_ACCESS, &objAttr, &cid) != STATUS_SUCCESS){
+        return FALSE;
+    }
 
     PVOID remoteLoadLibraryW = GetRemoteLoadLibraryW(hTarget);
     if (!remoteLoadLibraryW) {
@@ -119,16 +123,17 @@ BOOL InjectDll(DWORD pid, LPCWSTR dllPath)
         return FALSE;
     }
 
+	// Get the size of the DLL path string including null terminator
     SIZE_T dwSize = (wcslen(dllPath) + 1) * sizeof(WCHAR);
     PVOID remoteAddr = NULL;
-    // 
+	// Allocate memory in the target process for the DLL path
     if (fnNtAllocateVirtualMemory(hTarget, &remoteAddr, 0, &dwSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE) != STATUS_SUCCESS) {
         CloseHandle(hTarget);
         return FALSE;
     }
 
     SIZE_T bytesWritten = 0;
-    //
+	// write the DLL path into the allocated memory
     NTSTATUS status = fnNtWriteVirtualMemory(hTarget, remoteAddr, (PVOID)dllPath, dwSize, &bytesWritten);
     if (status != STATUS_SUCCESS || bytesWritten != dwSize) {
         fnNtFreeVirtualMemory(hTarget, &remoteAddr, &dwSize, MEM_RELEASE);
@@ -137,7 +142,7 @@ BOOL InjectDll(DWORD pid, LPCWSTR dllPath)
     }
 
     HANDLE hThread = NULL;
-    // 
+	// create a remote thread that calls LoadLibraryW with the DLL path as argument
     status = fnNtCreateThreadEx(&hThread, THREAD_ALL_ACCESS, NULL, hTarget, remoteLoadLibraryW, remoteAddr, 0, 0, 0, 0, NULL);
     if (status != STATUS_SUCCESS) {
         fnNtFreeVirtualMemory(hTarget, &remoteAddr, &dwSize, MEM_RELEASE);
@@ -145,6 +150,7 @@ BOOL InjectDll(DWORD pid, LPCWSTR dllPath)
         return FALSE;
     }
 
+	// Wait for the remote thread to finish
     WaitForSingleObject(hThread, INFINITE);
     CloseHandle(hThread);
     fnNtFreeVirtualMemory(hTarget, &remoteAddr, &dwSize, MEM_RELEASE);
