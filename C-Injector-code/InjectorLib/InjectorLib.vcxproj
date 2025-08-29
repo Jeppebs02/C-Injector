@@ -138,6 +138,7 @@
     <ClInclude Include="injector.h" />
     <ClInclude Include="ntdll_ext.h" />
     <ClInclude Include="process.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="injector.c" />
