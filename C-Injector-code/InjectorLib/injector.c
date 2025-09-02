@@ -121,7 +121,7 @@ BOOL InjectDll(DWORD pid, LPCWSTR dllPath)
     if (!remoteLoadLibraryW) {
         CloseHandle(hTarget);
         return FALSE;
-    }
+    }   
 
 	// Get the size of the DLL path string including null terminator
     SIZE_T dwSize = (wcslen(dllPath) + 1) * sizeof(WCHAR);
