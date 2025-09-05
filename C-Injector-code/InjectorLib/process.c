@@ -22,6 +22,7 @@ BOOL EnumerateProcesses(OUT PROCESSENTRY32* pe32Array, OUT DWORD* count)
 
 
 	PROCESSENTRY32 pe;
+
 	pe.dwSize = sizeof(pe); // dwSize member must always set before calling Process32First/Next functions
 	
 	DWORD i = 0; // base index
