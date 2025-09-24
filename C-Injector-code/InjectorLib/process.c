@@ -34,7 +34,7 @@ BOOL EnumerateProcesses(OUT PROCESSENTRY32* pe32Array, OUT DWORD* count)
 	while (more) {
 		// If we still have room, copy this process entry into caller's array
 		if (i < cap) {
-			// assign then increment
+
 			pe32Array[i] = pe;
 			i++;
 		}

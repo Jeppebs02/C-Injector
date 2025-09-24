@@ -30,13 +30,13 @@ static BOOL InitNtdll(void)
     fnNtWriteVirtualMemory = (NtWriteVirtualMemory_t)GetProcAddress(hNtDll, "NtWriteVirtualMemory");
     fnNtFreeVirtualMemory = (NtFreeVirtualMemory_t)GetProcAddress(hNtDll, "NtFreeVirtualMemory");
 
-    // Check if any of them failed to load
+    // Check if functions failed to load
     return fnNtOpenProcess && fnNtCreateThreadEx && fnNtQueryInformationProcess &&
         fnNtReadVirtualMemory && fnNtAllocateVirtualMemory && fnNtWriteVirtualMemory &&
         fnNtFreeVirtualMemory;
 }
 
-//Helpers for walking the target PEB to find the base address of
+//Helpers for walking the target PEB.
 
 static NTSTATUS GetRemoteModuleBase(HANDLE hProcess, LPCWSTR moduleName, PVOID* pBase)
 {
@@ -85,7 +85,7 @@ static NTSTATUS GetRemoteModuleBase(HANDLE hProcess, LPCWSTR moduleName, PVOID* 
 
 
 // Resolve the address of LoadLibraryW in the target process.
-// This is not necessary because kernel32.dll is almost always loaded at the same base address in all processes.
+// This is not necessary because kernel32.dll is almost always loaded at the same base address in all processes on windows.
 // But its nice for backward compatibility and in case of some weird edge cases.
 static PVOID GetRemoteLoadLibraryW(HANDLE hProcess)
 {
@@ -94,7 +94,7 @@ static PVOID GetRemoteLoadLibraryW(HANDLE hProcess)
     NTSTATUS status = GetRemoteModuleBase(hProcess, L"kernel32.dll", &remoteK32);
     if (status != STATUS_SUCCESS) return NULL;
 
-    // Compute offset of LoadLibraryW in local kernel32
+    // Calculate offset of LoadLibraryW in local kernel32
     PVOID localK32 = GetModuleHandleW(L"kernel32.dll");
     PVOID localLoad = GetProcAddress(localK32, "LoadLibraryW");
     ULONG_PTR offset = (ULONG_PTR)localLoad - (ULONG_PTR)localK32;

@@ -13,14 +13,14 @@ HWND hProcessListView = NULL;
 HWND hInjectButton = NULL;
 WCHAR szDllPath[MAX_PATH] = { 0 }; // Global variable to store the selected DLL path
 
-// Forward declarations of our functions. Add more as needed.
+// Forward declarations of functions. TODO: Add more as needed.
 void PopulateProcessList(HWND hListView);
 void HandleInjectClick(HWND hWnd);
 
 
 
 
-// The Window Procedure: Handles all events for the main window
+// The Window Procedure: Handles all events for the main window.
 // check https://learn.microsoft.com/en-us/windows/win32/api/winuser/nc-winuser-wndproc
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -28,7 +28,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
     case WM_CREATE:
     {
-        // This runs once when the window is created. We create UI elements here.
 
         // Create the ListView to show processes
         hProcessListView = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW, L"",
@@ -72,7 +71,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
             if (GetOpenFileNameW(&ofn)) {
                 // The user selected a file, szDllPath is now populated.
-                // We could update a label here to show the path, but for now, we just store it.
+				// TODO: Update UI to show selected DLL name/path.
             }
             break;
         }
@@ -98,16 +97,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 }
 
 
-// The main entry point for a GUI application
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-    // Initialize common controls
+    // Initialize controls
     INITCOMMONCONTROLSEX icex;
     icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
     icex.dwICC = ICC_LISTVIEW_CLASSES;
     InitCommonControlsEx(&icex);
 
-    // Register the window class
+    // Register window class
     WNDCLASSW wc = { 0 };
     wc.lpfnWndProc = WndProc;
     wc.hInstance = hInstance;
@@ -138,7 +137,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 void PopulateProcessList(HWND hListView)
 {
-    ListView_DeleteAllItems(hListView); // Clear the list first
+    ListView_DeleteAllItems(hListView); // Clear the list first :)
 
     PROCESSENTRY32 pe32[1024];
     DWORD count = 1024;
