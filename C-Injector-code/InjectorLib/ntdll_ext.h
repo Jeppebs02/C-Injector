@@ -11,6 +11,8 @@ typedef _Return_type_success_(return >= 0) long NTSTATUS;
 
 #define STATUS_SUCCESS  ((NTSTATUS)0x00000000L)
 #define STATUS_NOT_FOUND ((NTSTATUS)0xC0000225)
+#define STATUS_NO_MEMORY ((NTSTATUS)0xC0000017L)
+#define STATUS_UNSUCCESSFUL ((NTSTATUS)0xC0000001L)
 
 #endif
 #endif
@@ -194,13 +196,23 @@ typedef struct _PEB_LDR_DATA
 
 
 
+#ifdef _WIN64
 typedef struct _PEB {
-    BYTE Reserved1[2];
-    BYTE BeingDebugged;
-    BYTE Reserved2[1];
-    PVOID Reserved3[2];
-    PPEB_LDR_DATA Ldr;            /* < 0x1c on 64‑bit, 0x18 on 32‑bit */
-} PEB, * PPEB;
+	BYTE Reserved1[2];       // 0x00
+	BYTE BeingDebugged;      // 0x02
+	BYTE Reserved2[5];       // 0x03 (includes 4‑byte alignment pad)
+	PVOID Reserved3[2];      // 0x08
+	PPEB_LDR_DATA Ldr;       // 0x18
+} PEB, *PPEB;
+#else
+typedef struct _PEB {
+	BYTE Reserved1[2];       // 0x00
+	BYTE BeingDebugged;      // 0x02
+	BYTE Reserved2[1];       // 0x03
+	PVOID Reserved3[2];      // 0x04
+	PPEB_LDR_DATA Ldr;       // 0x0c
+} PEB, *PPEB;
+#endif
 
 
 typedef struct _CLIENT_ID

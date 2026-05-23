@@ -125,13 +125,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="gui.c" />
-    <ClCompile Include="log.c" />
     <ClCompile Include="main.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="gui.h" />
-    <ClInclude Include="log.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\InjectorLib\InjectorLib.vcxproj">
